@@ -15,46 +15,53 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
+import com.example.samplecomposeapp.R
 
 @Composable
-fun Login(navController: NavHostController) {
+fun Login(onClick: () -> Unit) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
             .fillMaxSize(1f)
-        ) {
+    ) {
         Column {
             val username = remember { mutableStateOf("") }
-            CreateTextField("Username", username)
+            CreateTextField(stringResource(R.string.username), username)
             val password = remember { mutableStateOf("") }
-            CreateTextField("Password", password)
-            CreateButton(navController, username.value, password.value)
+            CreateTextField(stringResource(R.string.password), password)
+            CreateButton(username.value, password.value, onClick)
         }
     }
 }
 
 @Composable
-fun CreateButton(navController: NavHostController, username: String, password: String) {
+fun CreateButton(
+    username: String,
+    password: String,
+    onClick: () -> Unit
+) {
     val context = LocalContext.current
     Button(onClick = {
         if (username.isNotEmpty() && password.isNotEmpty())
-            navController.navigate("home")
-        else Toast.makeText(context, "username and password cannot be empty", Toast.LENGTH_SHORT).show()
+            onClick()
+        else
+            Toast.makeText(
+                context,
+                context.getString(R.string.username_and_password_cannot_be_empty),
+                Toast.LENGTH_SHORT
+            ).show()
     }) {
-        Text(text = "Login")
+        Text(text = stringResource(R.string.login))
     }
 }
 
 @Composable
 fun CreateTextField(placeholder: String, text: MutableState<String>) {
-    // Remember the state of the text field
-
-    // TextField composable
     TextField(
         value = text.value,
-        onValueChange = { text.value = it},
+        onValueChange = { text.value = it },
         label = { Text(placeholder) },
         modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 10.dp)
     )

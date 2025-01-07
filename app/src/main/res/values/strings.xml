@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">Sample Compose App</string>
+    <string name="log_in">log in</string>
+    <string name="log_out">log out</string>
+    <string name="username_and_password_cannot_be_empty">username and password cannot be empty</string>
+    <string name="login">Login</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="person">Person</string>
+    <string name="department">Department</string>
+    <string name="designation">Designation</string>
+    <string name="mobile">Mobile</string>
+    <string name="profile_image">profile image</string>
 </resources>
