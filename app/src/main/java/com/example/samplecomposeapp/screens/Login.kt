@@ -15,6 +15,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,9 +36,9 @@ fun Login(onClick: () -> Unit) {
             .fillMaxSize(1f)
     ) {
         Column {
-            val username = remember { mutableStateOf("") }
+            val username = rememberSaveable { mutableStateOf("") }
             CreateEmailTextField(stringResource(R.string.username), username)
-            val password = remember { mutableStateOf("") }
+            val password = rememberSaveable { mutableStateOf("") }
             CreatePasswordTextField(stringResource(R.string.password), password)
             CreateButton(username.value, password.value, onClick)
         }
