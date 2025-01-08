@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.example.samplecomposeapp.R
 
 @Composable
-fun Login(onClick: () -> Unit) {
+fun Login(onClick: (email: String, password: String) -> Unit) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
@@ -89,12 +89,12 @@ fun CreateEmailTextField(placeholder: String, text: MutableState<String>) {
 fun CreateButton(
     username: String,
     password: String,
-    onClick: () -> Unit
+    onClick: (email: String, password: String) -> Unit
 ) {
     val context = LocalContext.current
     Button(onClick = {
         if (username.isNotEmpty() && password.isNotEmpty())
-            onClick()
+            onClick(username, password)
         else
             Toast.makeText(
                 context,
