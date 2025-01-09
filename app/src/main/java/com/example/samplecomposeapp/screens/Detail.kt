@@ -16,9 +16,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.samplecomposeapp.R
 import com.example.samplecomposeapp.model.Person
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewDetail() {
+    Detail(
+        person = Person(
+            name = "John Doe",
+            department = "Engineering",
+            designation = "Software Developer",
+            mobile = "+1 234 567 890"
+        )
+    )
+}
 
 @Composable
 fun Detail(person: Person) {

@@ -22,18 +22,27 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.samplecomposeapp.R
 import com.example.samplecomposeapp.model.Person
 import com.google.gson.Gson
 
+@Preview(showBackground = true)
+@Composable
+fun PreviewHome() {
+    Home(itemClick = { }) {}
+}
+
 @Composable
 fun Home(itemClick: (data: String) -> Unit, logout: () -> Unit) {
     val context = LocalContext.current
     Column {
-        Box(contentAlignment = Alignment.CenterEnd, modifier = Modifier
-            .padding(10.dp)
-            .fillMaxWidth()) {
+        Box(
+            contentAlignment = Alignment.CenterEnd, modifier = Modifier
+                .padding(10.dp)
+                .fillMaxWidth()
+        ) {
             Image(
                 imageVector = ImageVector.vectorResource(R.drawable.baseline_logout_24),
                 contentDescription = stringResource(id = R.string.log_out),
