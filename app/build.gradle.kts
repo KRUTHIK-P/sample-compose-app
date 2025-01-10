@@ -74,9 +74,13 @@ dependencies {
     //gson
     implementation("com.google.code.gson:gson:2.10.1")
 
-    //firebase
+    //firebase auth
     implementation("com.google.firebase:firebase-auth:23.1.0")
 
     //livedata
     implementation("androidx.compose.runtime:runtime-livedata:1.7.6")
+
+    //firebase firestore
+    implementation("com.google.firebase:firebase-firestore-ktx:25.1.1")
+
 }

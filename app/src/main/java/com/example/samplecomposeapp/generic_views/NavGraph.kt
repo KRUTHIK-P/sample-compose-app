@@ -55,7 +55,9 @@ fun NavGraph(
         )) {
             val data = it.arguments?.getString("data")
             val person = Gson().fromJson(data, Person::class.java)
-            Detail(person)
+            Detail(person) {
+                navController.popBackStack()
+            }
         }
     }
 }

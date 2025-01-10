@@ -1,6 +1,6 @@
 package com.example.samplecomposeapp.screens
 
-import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -16,16 +16,21 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.samplecomposeapp.R
 import com.example.samplecomposeapp.model.Person
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.firestore
 import com.google.gson.Gson
 
 @Preview(showBackground = true)
@@ -36,7 +41,14 @@ fun PreviewHome() {
 
 @Composable
 fun Home(itemClick: (data: String) -> Unit, logout: () -> Unit) {
-    val context = LocalContext.current
+    val db = Firebase.firestore
+    addDummyUsersToFireStore(db)
+    val users = remember { mutableStateOf<List<Person>>(emptyList()) }
+
+    // Fetch users asynchronously (call inside a coroutine scope)
+    LaunchedEffect(Unit) {
+        fetchData(db) { users.value = it }
+    }
     Column {
         Box(
             contentAlignment = Alignment.CenterEnd, modifier = Modifier
@@ -52,26 +64,69 @@ fun Home(itemClick: (data: String) -> Unit, logout: () -> Unit) {
             )
         }
         LazyColumn(content = {
-            items(createContent(context)) {
+            items(users.value) {
                 ListItem(it, itemClick)
             }
         })
     }
 }
 
-fun createContent(context: Context): List<Person> {
-    val list = ArrayList<Person>()
-    repeat(20) { index ->
-        list.add(
-            Person(
-                name = "${context.getString(R.string.person)} $index",
-                department = "${context.getString(R.string.department)} $index",
-                designation = "${context.getString(R.string.designation)} $index",
-                mobile = "${context.getString(R.string.mobile)} $index"
-            )
-        )
-    }
-    return list
+fun fetchData(db: FirebaseFirestore, success: (List<Person>) -> Unit) {
+    val list = mutableListOf<Person>()
+    db.collection("users").get()
+        .addOnSuccessListener { result ->
+            result.forEach { document ->
+                val person = document.toObject(Person::class.java)
+                list.add(person)
+            }
+            success(list)
+        }
+        .addOnFailureListener {
+            Log.d("firestore", "Error fetching users: $it")
+        }
+}
+
+fun addDummyUsersToFireStore(db: FirebaseFirestore) {
+    val usersRef = db.collection("users")
+
+    usersRef.get()
+        .addOnSuccessListener { documents ->
+            if (documents.isEmpty) {
+                val departments = listOf("Sales", "Marketing", "Engineering", "HR", "Finance")
+                val designations = listOf("Manager", "Executive", "Lead", "Director", "Engineer")
+
+                // Generate and add 20 dummy users
+                for (i in 1..20) {
+                    val userId =
+                        java.util.UUID.randomUUID().toString()  // Generate a random user ID
+                    val userName = "User $i"
+                    val department = departments.random()  // Random department from the list
+                    val designation = designations.random()  // Random designation from the list
+                    val mobile = "123456789$i"  // Simulated mobile number
+
+                    // Create a user data map
+                    val user = Person(
+                        name = userName,
+                        department = department,
+                        designation = designation,
+                        mobile = mobile
+                    )
+
+                    // Add the user data to the "users" collection
+                    usersRef.document(userId)
+                        .set(user)
+                        .addOnSuccessListener {
+                            println("User $i added successfully")
+                        }
+                        .addOnFailureListener { e ->
+                            println("Error adding user $i: $e")
+                        }
+                }
+            }
+        }
+        .addOnFailureListener { exception ->
+            Log.d("firestore", "Error checking collection: $exception")
+        }
 }
 
 @Composable
