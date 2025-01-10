@@ -13,6 +13,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -23,11 +24,11 @@ import com.example.samplecomposeapp.generic_views.GenericTextField
 @Preview(showBackground = true)
 @Composable
 fun PreviewLogin() {
-    Login {}
+    Login("error") { _, _ -> }
 }
 
 @Composable
-fun Login(onClick: (email: String, password: String) -> Unit) {
+fun Login(errorMessage: String?, onClick: (email: String, password: String) -> Unit) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
@@ -38,6 +39,13 @@ fun Login(onClick: (email: String, password: String) -> Unit) {
             CreateEmailTextField(stringResource(R.string.username), username)
             val password = rememberSaveable { mutableStateOf("") }
             CreatePasswordTextField(stringResource(R.string.password), password)
+            errorMessage?.let {
+                Text(
+                    text = it,
+                    color = Color.Red,
+                    modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 10.dp)
+                )
+            }
             CreateButton(username.value, password.value, onClick)
         }
     }

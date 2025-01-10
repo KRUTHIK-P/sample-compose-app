@@ -6,11 +6,10 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.samplecomposeapp.generic_views.NavGraph
@@ -18,6 +17,8 @@ import com.example.samplecomposeapp.utils.Preferences
 import com.example.samplecomposeapp.utils.ScreenNames
 
 class MainActivity : ComponentActivity() {
+
+    private val authViewModel: AuthViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -25,82 +26,53 @@ class MainActivity : ComponentActivity() {
             // Set up the Navigation
             val navController = rememberNavController()
 
-            // Provide the NavGraph to manage app's navigation
-            NavGraph(navController = navController)
-            val authViewModel: AuthViewModel by viewModels()
-            App(authViewModel)
-        }
-    }
-}
+            val authState by authViewModel.authState.observeAsState()
+            val context = LocalContext.current
 
-@Composable
-fun App(authViewModel: AuthViewModel) {
-    val authState by authViewModel.authState.collectAsState()
-    val context = LocalContext.current
-    // Create the NavController
-    val navController = rememberNavController()
+            // Extract error message when authState is an error
+            val errorMessage = (authState as? AuthState.Error)?.message
 
-    var startDestination = ScreenNames.LOGIN
-    if (Preferences.isLoggedIn())
-        startDestination = ScreenNames.HOME
+            // Pass the errorMessage to NavGraph (only changes to errorMessage will trigger recomposition)
+            NavGraph(navController = navController, authViewModel, errorMessage = errorMessage)
 
-    val itemClick = { data: String -> itemClick(navController, data) }
+            // Handle navigation logic based on authState
+            LaunchedEffect(authState) {
+                when (val state = authState) {
+                    is AuthState.UnAuthenticated -> {
+                        navController.navigate(ScreenNames.LOGIN) {
+                            popUpTo(ScreenNames.HOME) { inclusive = true }
+                        }
+                        authViewModel.setAuthState(null)
+                    }
 
-    // Set up the NavHost and navigation graph
-    NavHost(navController = navController, startDestination = startDestination) {
-        composable(ScreenNames.LOGIN) {
-            Login { username, password ->
-                login(navController, context, authViewModel, username, password)
+                    is AuthState.Authenticated -> {
+                        val user = state.user
+                        navController.navigate(ScreenNames.HOME) {
+                            popUpTo(ScreenNames.LOGIN) { inclusive = true }
+                        }
+                        Toast.makeText(
+                            context,
+                            "Welcome ${user.displayName ?: user.email}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+
+                    else -> Unit
+                }
             }
-        }
-        composable(ScreenNames.HOME) {
-            Home(itemClick) {
-                logout(navController, context, authViewModel)
-            }
-        }
-        composable("${ScreenNames.DETAIL}/{data}", arguments = listOf(
-            navArgument("data") { type = NavType.StringType }
-        )) {
-            val data = it.arguments?.getString("data")
-            val person = Gson().fromJson(data, Person::class.java)
-            Detail(person)
-        }
-    }
-
-    when (authState) {
-        is AuthState.UnAuthenticated -> {
-            navController.navigate(ScreenNames.LOGIN) {
-                // This will clear the back stack, so pressing back won't return to home screen
-                popUpTo(ScreenNames.HOME) { inclusive = true }
-            }
-        }
-        is AuthState.Authenticated -> {
-            val user = (authState as AuthState.Authenticated).user
-            navController.navigate(ScreenNames.HOME) {
-                popUpTo(ScreenNames.LOGIN) { inclusive = true }
-            }
-            Toast.makeText(context, "Welcome ${user.displayName ?: user.email}", Toast.LENGTH_SHORT).show()
-        }
-        is AuthState.Error -> {
-            val errorMessage = (authState as AuthState.Error).message
-            Toast.makeText(context, "Error: $errorMessage", Toast.LENGTH_SHORT).show()
         }
     }
 }
 
 fun login(
-    navController: NavHostController,
-    context: Context,
     authViewModel: AuthViewModel,
     username: String,
     password: String
 ) {
-//    Preferences.savePreference(true)
     authViewModel.loginOrSignUp(username, password)
 }
 
-fun logout(navController: NavHostController, context: Context, authViewModel: AuthViewModel) {
-//    Preferences.savePreference(false)
+fun logout(context: Context, authViewModel: AuthViewModel) {
     authViewModel.logout()
     Toast.makeText(context, context.getString(R.string.log_out), Toast.LENGTH_SHORT).show()
 }

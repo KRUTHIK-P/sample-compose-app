@@ -76,4 +76,7 @@ dependencies {
 
     //firebase
     implementation("com.google.firebase:firebase-auth:23.1.0")
+
+    //livedata
+    implementation("androidx.compose.runtime:runtime-livedata:1.7.6")
 }
