@@ -1,4 +1,4 @@
-package com.example.samplecomposeapp.generic_views
+package com.example.samplecomposeapp.ui.generic_views
 
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton

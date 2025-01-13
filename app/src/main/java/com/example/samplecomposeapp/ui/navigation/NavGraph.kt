@@ -1,4 +1,4 @@
-package com.example.samplecomposeapp.generic_views
+package com.example.samplecomposeapp.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
@@ -7,20 +7,22 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.samplecomposeapp.data.model.Person
 import com.example.samplecomposeapp.itemClick
 import com.example.samplecomposeapp.login
 import com.example.samplecomposeapp.logout
-import com.example.samplecomposeapp.model.Person
-import com.example.samplecomposeapp.screens.Detail
-import com.example.samplecomposeapp.screens.Home
-import com.example.samplecomposeapp.screens.Login
+import com.example.samplecomposeapp.ui.screens.Detail
+import com.example.samplecomposeapp.ui.screens.Home
+import com.example.samplecomposeapp.ui.screens.Login
+import com.example.samplecomposeapp.ui.viewmodel.ViewModel
 import com.example.samplecomposeapp.utils.Preferences
 import com.example.samplecomposeapp.utils.ScreenNames
 import com.google.gson.Gson
 
 @Composable
 fun NavGraph(
-    navController: NavHostController
+    navController: NavHostController,
+    viewModel: ViewModel
 ) {
     val context = LocalContext.current
 
@@ -36,7 +38,7 @@ fun NavGraph(
             }
         }
         composable(ScreenNames.HOME) {
-            Home({ data: String -> itemClick(navController, data) }) {
+            Home(viewModel, { data: String -> itemClick(navController, data) }) {
                 logout(navController, context)
             }
         }

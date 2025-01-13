@@ -5,14 +5,20 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.samplecomposeapp.generic_views.NavGraph
+import com.example.samplecomposeapp.ui.navigation.NavGraph
+import com.example.samplecomposeapp.ui.viewmodel.ViewModel
 import com.example.samplecomposeapp.utils.Preferences
 import com.example.samplecomposeapp.utils.ScreenNames
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    private val viewModel: ViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -21,7 +27,7 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
 
             // Provide the NavGraph to manage app's navigation
-            NavGraph(navController = navController)
+            NavGraph(navController = navController, viewModel)
         }
     }
 }

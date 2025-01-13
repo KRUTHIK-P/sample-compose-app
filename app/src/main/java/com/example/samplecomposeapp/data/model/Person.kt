@@ -1,4 +1,4 @@
-package com.example.samplecomposeapp.model
+package com.example.samplecomposeapp.data.model
 
 data class Person(
     val name: String,

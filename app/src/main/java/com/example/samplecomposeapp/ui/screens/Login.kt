@@ -1,4 +1,4 @@
-package com.example.samplecomposeapp.screens
+package com.example.samplecomposeapp.ui.screens
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
@@ -18,7 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.samplecomposeapp.R
-import com.example.samplecomposeapp.generic_views.GenericTextField
+import com.example.samplecomposeapp.ui.generic_views.GenericTextField
 
 @Preview(showBackground = true)
 @Composable

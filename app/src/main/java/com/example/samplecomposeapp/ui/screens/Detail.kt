@@ -1,4 +1,4 @@
-package com.example.samplecomposeapp.screens
+package com.example.samplecomposeapp.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -19,7 +19,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.samplecomposeapp.R
-import com.example.samplecomposeapp.model.Person
+import com.example.samplecomposeapp.data.model.Person
 
 @Preview(showBackground = true)
 @Composable
@@ -55,7 +55,7 @@ fun Detail(person: Person) {
                     imageVector = ImageVector.vectorResource(id = R.drawable.round_person_24),
                     contentDescription = stringResource(id = R.string.profile_image)
                 )
-                Text(text = person.name, style = MaterialTheme.typography.bodyLarge)
+                Text(text = "Person ${person.name}", style = MaterialTheme.typography.bodyLarge)
                 Text(text = person.department, style = MaterialTheme.typography.bodyLarge)
                 Text(text = person.designation, style = MaterialTheme.typography.bodyLarge)
                 Text(text = person.mobile, style = MaterialTheme.typography.bodyLarge)
