@@ -2,19 +2,35 @@ package com.example.samplecomposeapp.data.repository
 
 import com.example.samplecomposeapp.data.api.ApiService
 import com.example.samplecomposeapp.data.model.Person
+import com.example.samplecomposeapp.usecase.Repository
+import com.example.samplecomposeapp.utils.NetworkResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import javax.inject.Inject
 
-class Repository(private val apiService: ApiService) {
+/*@Inject constructor() tells 2 things to hilt,
+1.needs dependencies(params) to be injected, if required.
+2.how repository object can be provided.
+ */
+class RepositoryImpl @Inject constructor(private val apiService: ApiService) : Repository {
 
-    suspend fun getUsers(): Flow<List<Person>> = flow {
+    override suspend fun getUsers(): Flow<NetworkResult<List<Person>>> = flow {
         try {
-            val users = apiService.getUsers()
-            emit(users)
+            emit(NetworkResult.Loading)
+
+            val response = apiService.getUsers()
+
+            if (response.isSuccessful) {
+                response.body()?.let {
+                    emit(NetworkResult.Success(it))
+                } ?: emit(NetworkResult.Error("Empty response body"))
+            } else {
+                emit(NetworkResult.Error("Error: ${response.message()}"))
+            }
         } catch (e: Exception) {
-            emit(emptyList())
+            emit(NetworkResult.Error("Error fetching users: ${e.localizedMessage}"))
         }
     }.flowOn(Dispatchers.IO)
 }
