@@ -4,10 +4,8 @@ import com.example.samplecomposeapp.data.api.ApiService
 import com.example.samplecomposeapp.data.model.Person
 import com.example.samplecomposeapp.usecase.Repository
 import com.example.samplecomposeapp.utils.NetworkResult
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
 /*@Inject constructor() tells 2 things to hilt,
@@ -32,5 +30,5 @@ class RepositoryImpl @Inject constructor(private val apiService: ApiService) : R
         } catch (e: Exception) {
             emit(NetworkResult.Error("Error fetching users: ${e.localizedMessage}"))
         }
-    }.flowOn(Dispatchers.IO)
+    }
 }
